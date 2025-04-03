@@ -24,6 +24,7 @@ class BookmarkController extends Controller
     {
         // ... (index logic remains the same) ...
 
+    
         $user = Auth::user();
         $query = Bookmark::where('user_id', $user->id)->with(['category', 'tags']);
         if ($request->filled('category') && $request->category !== 'all') { /* ... */ }
