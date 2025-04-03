@@ -13,6 +13,8 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -41,5 +43,12 @@
                 {{ $slot }} {{-- This is where your page-specific content (like bookmark list) goes --}}
             </main>
         </div>
+        <script src="https://unpkg.com/@yaireo/tagify"></script>
+        <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script> {{-- Recommended polyfills --}}
+        {{-- END: Add Tagify JS --}}
+
+        {{-- Stack for page-specific scripts (like Tagify initialization) --}}
+        @stack('scripts')
+
     </body>
 </html>

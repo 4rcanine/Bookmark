@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Bookmark extends Model
 {
@@ -17,6 +18,7 @@ class Bookmark extends Model
         'url',
         'description',
         'is_favorite',
+        'notes',
     ];
 
     /**
@@ -43,5 +45,10 @@ class Bookmark extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'bookmark_tag');
     }
 }
