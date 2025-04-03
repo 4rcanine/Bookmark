@@ -3,19 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bookmark;
-use App\Models\Category; // Import Category model
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Import Auth facade
-use Illuminate\Validation\Rule; // For validation rules
+use Illuminate\Support\Facades\Auth; // Keep Auth for Auth::user() where needed
+use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // <-- FIX: ADD THIS LINE
 
 class BookmarkController extends Controller
 {
+    use AuthorizesRequests; // <-- FIX: ADD THIS LINE
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $user = Auth::user();
+        // Authorization for viewing the list is typically handled by the 'auth' middleware
+        // but you could add an explicit check if needed:
+        // $this->authorize('viewAny', Bookmark::class);
+
+        $user = Auth::user(); // Still needed to scope queries/data
         $query = Bookmark::where('user_id', $user->id)->with('category'); // Eager load category
 
         // --- Filtering ---
@@ -77,7 +84,10 @@ class BookmarkController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
+        // Authorization handled by 'auth' middleware
+        // $this->authorize('create', Bookmark::class); // Optional explicit check
+
+        $user = Auth::user(); // Still needed to get user's categories
         $categories = Category::where('user_id', $user->id)->orderBy('name')->get();
         return view('bookmarks.create', compact('categories'));
     }
@@ -87,7 +97,10 @@ class BookmarkController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
+        // Authorization handled by 'auth' middleware
+        // $this->authorize('create', Bookmark::class); // Optional explicit check
+
+        $user = Auth::user(); // Still needed for validation and setting user_id
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -112,15 +125,14 @@ class BookmarkController extends Controller
 
     /**
      * Display the specified resource.
-     * (Optional: Not strictly needed if everything is on the index page)
      */
     public function show(Bookmark $bookmark)
     {
-         // Authorize: Ensure the bookmark belongs to the logged-in user
-         if ($bookmark->user_id !== Auth::id()) {
-             abort(403); // Forbidden
-         }
-         return view('bookmarks.show', compact('bookmark')); // If you create a show view
+        // Use Policy for authorization
+        $this->authorize('view', $bookmark); // Checks BookmarkPolicy::view()
+
+        // Or redirect to edit or index if show view doesn't exist
+        return redirect()->route('bookmarks.edit', $bookmark);
     }
 
 
@@ -129,12 +141,13 @@ class BookmarkController extends Controller
      */
     public function edit(Bookmark $bookmark)
     {
-         // Authorize: Ensure the bookmark belongs to the logged-in user
-         if ($bookmark->user_id !== Auth::id()) {
-             abort(403);
-         }
+        // Use Policy for authorization
+        // Using 'update' permission check here makes sense, as viewing the edit form
+        // implies the intent/ability to update.
+        $this->authorize('update', $bookmark); // Checks BookmarkPolicy::update()
 
-        $user = Auth::user();
+        // Get the user from the authorized bookmark model relationship
+        $user = $bookmark->user; // Or Auth::user() still works fine
         $categories = Category::where('user_id', $user->id)->orderBy('name')->get();
         return view('bookmarks.edit', compact('bookmark', 'categories'));
     }
@@ -144,12 +157,12 @@ class BookmarkController extends Controller
      */
     public function update(Request $request, Bookmark $bookmark)
     {
-        // Authorize: Ensure the bookmark belongs to the logged-in user
-        if ($bookmark->user_id !== Auth::id()) {
-            abort(403);
-        }
+        // Use Policy for authorization
+        $this->authorize('update', $bookmark); // Checks BookmarkPolicy::update()
 
-        $user = Auth::user();
+        // Get user from bookmark or Auth, needed for validation context
+        $user = $bookmark->user; // Or Auth::user();
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'url' => 'required|url|max:2048',
@@ -161,7 +174,7 @@ class BookmarkController extends Controller
                     return $query->where('user_id', $user->id);
                 }),
             ],
-             // No validation needed for is_favorite here, handled by toggleFavorite
+             // is_favorite handled by toggleFavorite
         ]);
 
         $bookmark->update($validated);
@@ -174,10 +187,8 @@ class BookmarkController extends Controller
      */
     public function destroy(Bookmark $bookmark)
     {
-         // Authorize: Ensure the bookmark belongs to the logged-in user
-        if ($bookmark->user_id !== Auth::id()) {
-            abort(403);
-        }
+         // Use Policy for authorization
+         $this->authorize('delete', $bookmark); // Checks BookmarkPolicy::delete()
 
         $bookmark->delete();
         return redirect()->route('bookmarks.index')->with('success', 'Bookmark deleted successfully!');
@@ -188,11 +199,8 @@ class BookmarkController extends Controller
      */
     public function toggleFavorite(Request $request, Bookmark $bookmark)
     {
-        // Authorize: Ensure the bookmark belongs to the logged-in user
-        if ($bookmark->user_id !== Auth::id()) {
-             return response()->json(['message' => 'Unauthorized'], 403); // Respond with JSON for potential AJAX calls
-            // Or abort(403); if only using form submissions
-        }
+        // Use Policy for authorization - matching the method name in the Policy
+        $this->authorize('toggleFavorite', $bookmark); // Checks BookmarkPolicy::toggleFavorite()
 
         $bookmark->is_favorite = !$bookmark->is_favorite;
         $bookmark->save();
@@ -201,12 +209,11 @@ class BookmarkController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Favorite status toggled.',
-                'is_favorite' => $bookmark->is_favorite
+                'is_favorite' => $bookmark->is_favorite // Send back the new status
             ]);
         }
 
          // Redirect back with a success message (for non-AJAX)
-         // Consider redirecting back to the previous page with filters preserved
          return back()->with('success', 'Favorite status updated.');
     }
 }

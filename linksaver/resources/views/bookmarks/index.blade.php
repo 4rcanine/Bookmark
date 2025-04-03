@@ -17,10 +17,15 @@
 
                     {{-- Success Message --}}
                     @if (session('success'))
-                        <div class="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-300 rounded">
+                        <div id="success-message" class="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-300 rounded">
                             {{ session('success') }}
                         </div>
                     @endif
+                     {{-- Placeholder for AJAX success messages --}}
+                    <div id="ajax-success-message" class="hidden mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-300 rounded">
+                        <!-- Message will be inserted here by JS -->
+                    </div>
+
 
                     {{-- Filter/Search Form --}}
                     <form method="GET" action="{{ route('bookmarks.index') }}" class="mb-6 space-y-4 md:space-y-0 md:flex md:space-x-4 md:items-end">
@@ -71,21 +76,29 @@
 
 
                     {{-- Bookmark List --}}
-                    <div class="space-y-4">
+                    {{-- Added ID for potential event delegation if needed later --}}
+                    <div class="space-y-4" id="bookmark-list">
                         @forelse ($bookmarks as $bookmark)
                             <div class="p-4 border dark:border-gray-700 rounded-lg flex justify-between items-start">
                                 <div class="flex-grow mr-4">
                                     <div class="flex items-center space-x-2 mb-1">
-                                        {{-- Favorite Toggle Form --}}
-                                        <form action="{{ route('bookmarks.toggleFavorite', $bookmark) }}" method="POST" class="inline-block align-middle">
+                                        {{-- Favorite Toggle Form -- START MODIFICATION --}}
+                                        <form action="{{ route('bookmarks.toggleFavorite', $bookmark) }}"
+                                              method="POST"
+                                              class="inline-block align-middle favorite-toggle-form"> {{-- ADDED CLASS --}}
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-gray-400 hover:text-yellow-500 focus:outline-none {{ $bookmark->is_favorite ? 'text-yellow-400' : '' }}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <button type="submit"
+                                                    class="text-gray-400 hover:text-yellow-500 focus:outline-none favorite-toggle-button {{ $bookmark->is_favorite ? 'text-yellow-400' : '' }}" {{-- ADDED CLASS --}}
+                                                    aria-label="{{ $bookmark->is_favorite ? 'Remove from favorites' : 'Add to favorites' }}"> {{-- Improved accessibility --}}
+
+                                                {{-- Added specific class to the icon --}}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 favorite-icon" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                 </svg>
                                             </button>
                                         </form>
+                                         {{-- END MODIFICATION --}}
 
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                             <a href="{{ $bookmark->url }}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 dark:hover:text-blue-400 break-all">{{ $bookmark->title }}</a>
@@ -136,4 +149,133 @@
             </div>
         </div>
     </div>
+
+    {{-- =========================================================== --}}
+    {{-- START: JavaScript for AJAX Favorite Toggle                  --}}
+    {{-- =========================================================== --}}
+    @push('scripts')
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the container for AJAX messages
+             const ajaxSuccessMessageDiv = document.getElementById('ajax-success-message');
+             // Hide the standard success message after a few seconds if it exists
+             const standardSuccessMessageDiv = document.getElementById('success-message');
+             if (standardSuccessMessageDiv) {
+                 setTimeout(() => {
+                     standardSuccessMessageDiv.style.display = 'none';
+                 }, 5000); // Hide after 5 seconds
+             }
+
+
+            // Find all favorite toggle forms
+            const forms = document.querySelectorAll('.favorite-toggle-form');
+
+            forms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Prevent the default form submission (page reload)
+                    event.preventDefault();
+
+                    const currentForm = event.target;
+                    const actionUrl = currentForm.action;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const icon = currentForm.querySelector('.favorite-icon');
+                    const button = currentForm.querySelector('.favorite-toggle-button');
+
+                    // Hide any previous AJAX message
+                    if (ajaxSuccessMessageDiv) {
+                        ajaxSuccessMessageDiv.classList.add('hidden');
+                        ajaxSuccessMessageDiv.textContent = '';
+                    }
+
+
+                    // Optional: Provide immediate visual feedback (e.g., disable button)
+                    button.disabled = true;
+                    icon.classList.add('opacity-50'); // Dim the icon slightly
+
+                    // Send the AJAX request using the Fetch API
+                    fetch(actionUrl, {
+                        method: 'PATCH', // Method is PATCH
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,       // Include CSRF token
+                            'Accept': 'application/json',    // Tell Laravel we want JSON back
+                            'X-Requested-With': 'XMLHttpRequest', // Common header for AJAX requests
+                            'Content-Type': 'application/json'
+                        },
+                        // No body needed for toggle
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            // Handle HTTP errors
+                            console.error('Network response was not ok:', response.status, response.statusText);
+                            // Try to parse potential JSON error message from Laravel validation
+                             return response.json().then(errData => {
+                                 throw { status: response.status, data: errData }; // Throw an object with status and data
+                             }).catch(() => {
+                                 // If parsing JSON fails, throw a generic error
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                             });
+                        }
+                        return response.json(); // Parse the JSON response from the controller
+                    })
+                    .then(data => {
+                        // Successfully received JSON data
+                        console.log('Success:', data); // Log success data
+
+                        // Update the icon's appearance based on the new status
+                        if (data.is_favorite) {
+                            button.classList.add('text-yellow-400');
+                            button.setAttribute('aria-label', 'Remove from favorites');
+                        } else {
+                            button.classList.remove('text-yellow-400');
+                             button.setAttribute('aria-label', 'Add to favorites');
+                        }
+
+                        // Show success message in the dedicated div
+                         if (ajaxSuccessMessageDiv && data.message) {
+                             ajaxSuccessMessageDiv.textContent = data.message;
+                             ajaxSuccessMessageDiv.classList.remove('hidden');
+                             // Optional: Hide message after a few seconds
+                             setTimeout(() => {
+                                 ajaxSuccessMessageDiv.classList.add('hidden');
+                                 ajaxSuccessMessageDiv.textContent = '';
+                             }, 3000); // Hide after 3 seconds
+                         }
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        console.error('Error toggling favorite status:', error);
+                        let errorMessage = 'Could not update favorite status. Please try again.';
+                         // Check if it's our custom error object with data
+                         if (error && error.data && error.data.message) {
+                             errorMessage = error.data.message; // Use message from server if available (e.g., validation)
+                         } else if (error && error.message) {
+                            errorMessage = error.message; // Use generic fetch error message
+                         }
+
+                         // Display error message (consider a dedicated error div)
+                         if (ajaxSuccessMessageDiv) { // Re-using success div for errors for simplicity
+                             ajaxSuccessMessageDiv.textContent = `Error: ${errorMessage}`;
+                             ajaxSuccessMessageDiv.classList.remove('hidden');
+                             ajaxSuccessMessageDiv.classList.remove('bg-green-100', 'dark:bg-green-900', 'border-green-400', 'text-green-700', 'dark:text-green-300');
+                             ajaxSuccessMessageDiv.classList.add('bg-red-100', 'dark:bg-red-900', 'border-red-400', 'text-red-700', 'dark:text-red-300');
+                         } else {
+                             alert(errorMessage); // Fallback to alert
+                         }
+
+                    })
+                    .finally(() => {
+                         // Re-enable the button and remove dimming regardless of success/failure
+                        button.disabled = false;
+                        icon.classList.remove('opacity-50');
+                    });
+                });
+            });
+        });
+    </script>
+    @endpush
+    {{-- =========================================================== --}}
+    {{-- END: JavaScript for AJAX Favorite Toggle                    --}}
+    {{-- =========================================================== --}}
+
 </x-app-layout>
