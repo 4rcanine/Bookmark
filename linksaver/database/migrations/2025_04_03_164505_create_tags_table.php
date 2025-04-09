@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            // Scope tags to the user who created them
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('slug')->unique(); // For URL-friendliness and uniqueness per user scope (we'll enforce unique per user later)
+            // REMOVED ->unique() from here
+            $table->string('slug');
             $table->timestamps();
 
-            // Ensure a user doesn't create duplicate tag names/slugs
-            $table->unique(['user_id', 'slug']);
-            $table->unique(['user_id', 'name']);
+            // Keep these composite constraints
+            $table->unique(['user_id', 'slug']); // Slug unique per user
+            $table->unique(['user_id', 'name']); // Name unique per user
         });
     }
 
