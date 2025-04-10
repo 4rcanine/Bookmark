@@ -25,22 +25,22 @@
     {{-- Apply the class defined in resources/css/app.css --}}
     <div class="content-wrapper">
 
-        <header class="w-full max-w-6xl px-6 pt-6 lg:pt-8">
+        {{--  <header class="w-full max-w-6xl px-6 pt-6 lg:pt-8">
             @if (Route::has('login'))
                 <nav class="flex flex-1 justify-end items-center gap-3">
-                    {{-- Links - Ensure text color contrasts with overlay (usually white) --}}
+                    
                     @auth
                         <a href="{{ url('/dashboard') }}" class="rounded-md px-4 py-2 text-white ring-1 ring-transparent transition hover:text-white/80 focus:outline-none focus-visible:ring-white">Dashboard</a>
                     @else
                         <a href="{{ route('login') }}" class="rounded-md px-4 py-2 text-white ring-1 ring-transparent transition hover:text-white/80 focus:outline-none focus-visible:ring-white">Log in</a>
                         @if (Route::has('register'))
-                            {{-- Apply button class defined in resources/css/app.css --}}
+                            
                             <a href="{{ route('register') }}" class="rounded-md px-4 py-2 linksaver-register-button text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white">Register</a>
                         @endif
                     @endauth
                 </nav>
             @endif
-        </header>
+        </header> --}}
 
         <main class="flex flex-col items-center justify-center flex-grow px-6 text-center">
            <div class="max-w-2xl">
