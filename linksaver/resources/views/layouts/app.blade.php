@@ -1,4 +1,3 @@
-{{-- File: resources/views/layouts/app.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -11,13 +10,11 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        {{-- Tagify CSS --}}
         <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
-            /* Optional custom styles */
         </style>
     </head>
     <body class="font-sans antialiased">
@@ -34,19 +31,13 @@
             @endisset
 
             <main class="flex-grow py-8 md:py-12">
-                 {{-- This div centers the content and acts as the relative parent for the TOP-RIGHT image --}}
                 <div class="content-area max-w-7xl mx-auto sm:px-6 lg:px-8 relative">
 
-                    {{-- START: Top-Right Illustration (Now GIF) --}}
                     <div class="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/4 sm:translate-x-1/3 md:translate-x-1/2 lg:right-10 z-20 pointer-events-none hidden lg:block">
-                        {{-- === FILENAME UPDATED HERE === --}}
                         <img src="{{ asset('images/snorlaa.gif') }}" alt="Decorative Illustration" class="h-24 w-auto md:h-32">
-                        {{-- === === === === === === === --}}
                     </div>
-                    {{-- END: Top-Right Illustration --}}
 
 
-                    {{-- The main page content ($slot) --}}
                     {{ $slot }}
 
                 </div>
@@ -57,51 +48,46 @@
             </footer>
         </div>
 
-        {{-- START: Bottom Walking Cat Element --}}
         <img id="walking-cat-loop"
              src="{{ asset('images/walking-left-cat.gif') }}"
              alt="Walking cat animation"
-             class="fixed bottom-5 left-0 z-40 w-24 h-auto pointer-events-none" {{-- Removed flip --}}
+             class="fixed bottom-5 left-0 z-40 w-24 h-auto pointer-events-none" 
              style="left: -100px;"
              >
-        {{-- END: Bottom Walking Cat Element --}}
 
 
-        {{-- Tagify JS --}}
         <script src="https://unpkg.com/@yaireo/tagify"></script>
         <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 
-        {{-- Stack for page-specific scripts --}}
         @stack('scripts')
 
-        {{-- START: Walking Cat JavaScript (Looping Right) --}}
-        {{-- Script remains the same --}}
+   
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const cat = document.getElementById('walking-cat-loop');
                 if (!cat) return;
 
-                const speed = 0.75; // Slow speed
+                const speed = 0.75; 
                 let catWidth = cat.offsetWidth;
-                if (catWidth === 0) catWidth = 96; // Estimate for w-24
+                if (catWidth === 0) catWidth = 96; 
 
-                let position = -catWidth; // Start position off-screen left
+                let position = -catWidth; 
 
-                cat.style.left = `${position}px`; // Set initial position
+                cat.style.left = `${position}px`; 
 
                 function animateCatLoop() {
                     catWidth = cat.offsetWidth;
                     if (catWidth === 0) catWidth = 96;
 
-                    position += speed; // Move right
+                    position += speed; 
 
-                    if (position > window.innerWidth) { // Check if off-screen right
-                        position = -catWidth; // Reset to off-screen left
+                    if (position > window.innerWidth) { 
+                        position = -catWidth; 
                     }
 
-                    cat.style.left = `${position}px`; // Update position
+                    cat.style.left = `${position}px`; 
 
-                    requestAnimationFrame(animateCatLoop); // Loop
+                    requestAnimationFrame(animateCatLoop); 
                 }
 
                 setTimeout(() => {
@@ -116,7 +102,6 @@
                  });
             });
         </script>
-        {{-- END: Walking Cat JavaScript --}}
 
     </body>
 </html>

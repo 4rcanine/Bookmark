@@ -1,10 +1,8 @@
-{{-- resources/views/bookmarks/_form.blade.php --}}
-{{-- Expects $categories and $bookmark variables --}}
+
 @csrf
 
 <div>
     <label for="title" class="block text-sm font-medium text-cozy-text">{{ __('Title') }}</label>
-    {{-- Use Blade component or style directly --}}
     <input id="title" class="block mt-1 w-full border-cozy-brown-light rounded-md shadow-sm focus:border-cozy-purple focus:ring focus:ring-cozy-purple focus:ring-opacity-50 bg-white text-cozy-text" type="text" name="title" value="{{ old('title', $bookmark->title) }}" required autofocus autocomplete="off" />
     <x-input-error :messages="$errors->get('title')" class="mt-2" />
 </div>
@@ -41,20 +39,17 @@
    <p class="text-sm text-cozy-text-muted mt-1">Manage categories <a href="{{ route('categories.index') }}" class="text-cozy-purple hover:underline">here</a>.</p>
 </div>
 
-{{-- Tags Input Update for Tagify --}}
 <div class="mt-4">
     <label for="tags-input" class="block text-sm font-medium text-cozy-text">{{ __('Tags (Optional)') }}</label>
     @php
-        // Prepare the initial value string for editing
         $tagsValue = old('tags', ($bookmark->exists && $bookmark->relationLoaded('tags')) ? $bookmark->tags->pluck('name')->implode(', ') : '');
     @endphp
-    {{-- Input has specific ID for Tagify JS - Styling handled in app.css --}}
     <input id="tags-input"
-           name="tags" {{-- Keep name="tags" --}}
+           name="tags" 
            type="text"
-           class="block mt-1 w-full tagify--outside" {{-- Base input styles, Tagify will override appearance --}}
-           value="{{ $tagsValue }}" {{-- Set initial value --}}
-           placeholder="Add tags..." {{-- New placeholder --}}
+           class="block mt-1 w-full tagify--outside" 
+           value="{{ $tagsValue }}" 
+           placeholder="Add tags..." 
            />
     <x-input-error :messages="$errors->get('tags')" class="mt-2" />
 </div>

@@ -2,84 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Apply base styles and background */
+
 @layer base {
     body {
         @apply font-sans antialiased bg-cozy-cat bg-cover bg-center bg-no-repeat bg-fixed text-cozy-text;
-         /* bg-fixed ensures it doesn't scroll */
-         /* Adjust bg-cover/bg-center as needed for your image */
+         
     }
 }
 
-/* Optional: Style scrollbar for a more integrated look (Webkit browsers) */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Or a theme color like cozy-cream */
+  background: #f1f1f1; 
 }
 ::-webkit-scrollbar-thumb {
-  background: #D2B48C; /* cozy-brown-light */
+  background: #D2B48C; 
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B4513; /* cozy-brown */
+  background: #8B4513; 
 }
 
-/* Style Tagify to match the theme */
+
 .tagify {
-    @apply !border-cozy-brown-light !bg-white rounded-md; /* Use theme border */
+    @apply !border-cozy-brown-light !bg-white rounded-md;
 }
 .tagify__tag {
-    @apply !bg-cozy-purple/80 !text-white; /* Use theme color for tags */
+    @apply !bg-cozy-purple/80 !text-white; 
 }
 .tagify__tag > div::before {
-    @apply !bg-white/50; /* Adjust remove button background */
+    @apply !bg-white/50;
 }
 .tagify__input {
-     @apply !text-cozy-text; /* Match input text color */
+     @apply !text-cozy-text; 
 }
 .tagify__dropdown__item {
-    @apply hover:!bg-cozy-cream; /* Dropdown hover color */
+    @apply hover:!bg-cozy-cream; 
 }
 .tagify__dropdown__item--active {
-    @apply !bg-cozy-brown-light; /* Dropdown active color */
+    @apply !bg-cozy-brown-light; 
 }
-.tags-look .tagify__dropdown__item{ /* Specific dropdown style from your original code */
+.tags-look .tagify__dropdown__item{ 
   display: inline-block;
   border-radius: 3px;
   padding: .3em .5em;
-  border: 1px solid #CCC; /* Adjust border */
-  background: #F3F3F3; /* Adjust background */
+  border: 1px solid #CCC; 
+  background: #F3F3F3; 
   margin: .2em;
   font-size: .85em;
-  color: black; /* Adjust text color */
-  transition: 0s;
+  color: black; 
 }
 .tags-look .tagify__dropdown__item--active{
-  @apply !border-cozy-purple; /* Active item border */
+  @apply !border-cozy-purple; 
 }
 .tags-look .tagify__dropdown__item:hover{
-  @apply !bg-cozy-purple/20 text-black; /* Hover state */
+  @apply !bg-cozy-purple/20 text-black; 
 }
 
-@layer base { /* Good place for body styles */
+@layer base { 
     body.linksaver-bg-image {
-        background-image: url('images/snor.gif'); /* Correct path and CASE */
+        background-image: url('images/snor.gif'); 
         @apply bg-cover bg-center bg-no-repeat bg-fixed;
-        @apply bg-gray-700; /* Fallback color */
+        @apply bg-gray-700;
     }
 
-    /* Optional: Define dark mode variant */
      .dark body.linksaver-bg-image {
-         /* background-image: url('/images/your-dark-background.jpg'); */
-         @apply bg-gray-900; /* Darker fallback/base */
+         @apply bg-gray-900; 
     }
 }
 
-/* Styles for overlay and wrapper */
 .background-overlay {
-  @apply fixed inset-0 bg-black/50 z-0; /* Adjust opacity as needed */
+  @apply fixed inset-0 bg-black/50 z-0;
 }
  .dark .background-overlay {
      @apply bg-black/60;
@@ -89,7 +83,6 @@
   @apply relative z-10 w-full flex flex-col min-h-screen items-center;
 }
 
-/* Styles for buttons (example) */
 @layer components {
     .linksaver-button {
          @apply bg-[#C68EFD] text-white font-semibold transition-colors duration-300;

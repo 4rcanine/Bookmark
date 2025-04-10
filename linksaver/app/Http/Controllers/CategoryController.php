@@ -4,36 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Keep for Auth::user()
+use Illuminate\Support\Facades\Auth; 
 use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // <-- ADDED THIS LINE
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 class CategoryController extends Controller
 {
-    use AuthorizesRequests; // <-- ADDED THIS LINE
+    use AuthorizesRequests; 
 
-    /**
-     * Display a listing of the user's categories.
-     */
+  
     public function index()
     {
-        // Authorization handled by 'auth' middleware
-        // $this->authorize('viewAny', Category::class); // Optional explicit check
-
-        $user = Auth::user(); // Still needed
+        
+        $user = Auth::user(); 
         $categories = Category::where('user_id', $user->id)->orderBy('name')->get();
         return view('categories.index', compact('categories'));
     }
 
-    /**
-     * Store a newly created category in storage.
-     */
     public function store(Request $request)
     {
-        // Authorization handled by 'auth' middleware
-        // $this->authorize('create', Category::class); // Optional explicit check
-
-        $user = Auth::user(); // Still needed
+       
+        $user = Auth::user(); 
         $validated = $request->validate([
             'name' => [
                 'required',
@@ -53,23 +44,14 @@ class CategoryController extends Controller
     }
 
 
-    /**
-     * Remove the specified category from storage.
-     */
+  
     public function destroy(Category $category)
     {
-        // Use Policy for authorization
-        $this->authorize('delete', $category); // Checks CategoryPolicy::delete()
-
-        // No need for the manual check anymore:
-        // if ($category->user_id !== Auth::id()) {
-        //     abort(403);
-        // }
+        $this->authorize('delete', $category); 
 
         $category->delete();
 
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully!');
     }
 
-    // Add edit/update methods with appropriate authorize() calls if needed later
 }
