@@ -34,25 +34,16 @@
             @endisset
 
             <main class="flex-grow py-8 md:py-12">
-                 {{-- This div centers the content and acts as the relative parent for the cat --}}
-                <div class="content-area max-w-7xl mx-auto sm:px-6 lg:px-8 relative"> {{-- <-- Added relative positioning --}}
+                 {{-- This div centers the content and acts as the relative parent for the TOP-RIGHT image --}}
+                <div class="content-area max-w-7xl mx-auto sm:px-6 lg:px-8 relative">
 
-                    {{-- START: Add the Cat Illustration --}}
+                    {{-- START: Top-Right Illustration (Now GIF) --}}
                     <div class="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/4 sm:translate-x-1/3 md:translate-x-1/2 lg:right-10 z-20 pointer-events-none hidden lg:block">
-                        {{--
-                            - absolute: Positions relative to the nearest positioned ancestor (the content-area div).
-                            - top-0: Aligns the top of the image container with the top of the content-area before translation.
-                            - right-0 / lg:right-10: Aligns to the right edge (adjust lg:right-10 as needed for spacing).
-                            - transform: Enables transforms.
-                            - -translate-y-1/2: Pulls the image container up by half its height, centering it vertically on the top edge.
-                            - translate-x-1/4 etc: Pushes the image slightly right (adjust as needed).
-                            - z-20: Ensures it's above the content area background/border.
-                            - pointer-events-none: Prevents the image from blocking clicks on elements behind it.
-                            - hidden lg:block: Hides the cat on smaller screens (adjust breakpoint if needed).
-                        --}}
-                        <img src="{{ asset('images/cat-illustration.png') }}" alt="Decorative Cat Illustration" class="h-24 w-auto md:h-32"> {{-- Adjust height (h-24/h-32) as needed --}}
+                        {{-- === FILENAME UPDATED HERE === --}}
+                        <img src="{{ asset('images/snorlaa.gif') }}" alt="Decorative Illustration" class="h-24 w-auto md:h-32">
+                        {{-- === === === === === === === --}}
                     </div>
-                    {{-- END: Add the Cat Illustration --}}
+                    {{-- END: Top-Right Illustration --}}
 
 
                     {{-- The main page content ($slot) --}}
@@ -66,12 +57,66 @@
             </footer>
         </div>
 
+        {{-- START: Bottom Walking Cat Element --}}
+        <img id="walking-cat-loop"
+             src="{{ asset('images/walking-left-cat.gif') }}"
+             alt="Walking cat animation"
+             class="fixed bottom-5 left-0 z-40 w-24 h-auto pointer-events-none" {{-- Removed flip --}}
+             style="left: -100px;"
+             >
+        {{-- END: Bottom Walking Cat Element --}}
+
+
         {{-- Tagify JS --}}
         <script src="https://unpkg.com/@yaireo/tagify"></script>
         <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 
         {{-- Stack for page-specific scripts --}}
         @stack('scripts')
+
+        {{-- START: Walking Cat JavaScript (Looping Right) --}}
+        {{-- Script remains the same --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const cat = document.getElementById('walking-cat-loop');
+                if (!cat) return;
+
+                const speed = 0.75; // Slow speed
+                let catWidth = cat.offsetWidth;
+                if (catWidth === 0) catWidth = 96; // Estimate for w-24
+
+                let position = -catWidth; // Start position off-screen left
+
+                cat.style.left = `${position}px`; // Set initial position
+
+                function animateCatLoop() {
+                    catWidth = cat.offsetWidth;
+                    if (catWidth === 0) catWidth = 96;
+
+                    position += speed; // Move right
+
+                    if (position > window.innerWidth) { // Check if off-screen right
+                        position = -catWidth; // Reset to off-screen left
+                    }
+
+                    cat.style.left = `${position}px`; // Update position
+
+                    requestAnimationFrame(animateCatLoop); // Loop
+                }
+
+                setTimeout(() => {
+                    requestAnimationFrame(animateCatLoop);
+                }, 100);
+
+                 window.addEventListener('resize', () => {
+                    if (parseFloat(cat.style.left) > window.innerWidth) {
+                         position = -catWidth;
+                         cat.style.left = `${position}px`;
+                    }
+                 });
+            });
+        </script>
+        {{-- END: Walking Cat JavaScript --}}
 
     </body>
 </html>

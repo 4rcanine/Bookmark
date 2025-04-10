@@ -186,8 +186,8 @@
                                     <span x-show="!open">Notes</span>
                                     <span x-show="open">Notes</span>
                                 </button>
-                                {{-- Notes content box style --}}
-                                <div x-show="open" x-transition x-cloak class="mt-1 p-2 bg-cozy-cream border border-cozy-brown-light rounded text-sm text-cozy-text whitespace-pre-wrap w-full clear-both">
+                                {{-- Notes content box style - FIXED INDENTATION --}}
+                                <div x-show="open" x-transition x-cloak class="mt-1 p-2 bg-cozy-cream border border-cozy-brown-light rounded text-sm text-cozy-text whitespace-pre-line w-full clear-both"> {{-- <-- Changed to whitespace-pre-line --}}
                                     {{ $bookmark->notes }}
                                 </div>
                             </div>

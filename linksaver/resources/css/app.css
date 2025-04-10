@@ -62,3 +62,73 @@
 .tags-look .tagify__dropdown__item:hover{
   @apply !bg-cozy-purple/20 text-black; /* Hover state */
 }
+
+@layer base { /* Good place for body styles */
+    body.linksaver-bg-image {
+        background-image: url('images/snor.gif'); /* Correct path and CASE */
+        @apply bg-cover bg-center bg-no-repeat bg-fixed;
+        @apply bg-gray-700; /* Fallback color */
+    }
+
+    /* Optional: Define dark mode variant */
+     .dark body.linksaver-bg-image {
+         /* background-image: url('/images/your-dark-background.jpg'); */
+         @apply bg-gray-900; /* Darker fallback/base */
+    }
+}
+
+/* Styles for overlay and wrapper */
+.background-overlay {
+  @apply fixed inset-0 bg-black/50 z-0; /* Adjust opacity as needed */
+}
+ .dark .background-overlay {
+     @apply bg-black/60;
+ }
+
+.content-wrapper {
+  @apply relative z-10 w-full flex flex-col min-h-screen items-center;
+}
+
+/* Styles for buttons (example) */
+@layer components {
+    .linksaver-button {
+         @apply bg-[#C68EFD] text-white font-semibold transition-colors duration-300;
+         @apply hover:bg-[#8F87F1];
+    }
+    .linksaver-register-button {
+        @apply bg-white/15 text-white border border-white/40 transition-colors duration-300;
+        @apply hover:bg-white/30;
+    }
+}
+
+body.guest-layout-background {
+    background-image: url('images/snorky.png'); 
+    background-size:cover;
+    background-position:center center; 
+    background-repeat:no-repeat; 
+    background-attachment: fixed;
+    min-height: 100vh; 
+}
+
+.dark body.guest-layout-background .guest-form-box {
+     background-color: rgba(31, 41, 55, 0.9); 
+}
+body.guest-layout-background .guest-form-box {
+     background-color: #B7B1F2;
+}
+
+.guest-form-box input[type="text"],
+.guest-form-box input[type="email"],
+.guest-form-box input[type="password"],
+.guest-form-box input[type="number"]
+ {
+    background-color: #EABDE6; 
+}
+
+.dark .guest-form-box input[type="text"],
+.dark .guest-form-box input[type="email"],
+.dark .guest-form-box input[type="password"],
+.dark .guest-form-box input[type="number"]
+{
+    background-color: #EABDE6; 
+}
