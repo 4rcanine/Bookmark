@@ -1,3 +1,64 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Apply base styles and background */
+@layer base {
+    body {
+        @apply font-sans antialiased bg-cozy-cat bg-cover bg-center bg-no-repeat bg-fixed text-cozy-text;
+         /* bg-fixed ensures it doesn't scroll */
+         /* Adjust bg-cover/bg-center as needed for your image */
+    }
+}
+
+/* Optional: Style scrollbar for a more integrated look (Webkit browsers) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Or a theme color like cozy-cream */
+}
+::-webkit-scrollbar-thumb {
+  background: #D2B48C; /* cozy-brown-light */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B4513; /* cozy-brown */
+}
+
+/* Style Tagify to match the theme */
+.tagify {
+    @apply !border-cozy-brown-light !bg-white rounded-md; /* Use theme border */
+}
+.tagify__tag {
+    @apply !bg-cozy-purple/80 !text-white; /* Use theme color for tags */
+}
+.tagify__tag > div::before {
+    @apply !bg-white/50; /* Adjust remove button background */
+}
+.tagify__input {
+     @apply !text-cozy-text; /* Match input text color */
+}
+.tagify__dropdown__item {
+    @apply hover:!bg-cozy-cream; /* Dropdown hover color */
+}
+.tagify__dropdown__item--active {
+    @apply !bg-cozy-brown-light; /* Dropdown active color */
+}
+.tags-look .tagify__dropdown__item{ /* Specific dropdown style from your original code */
+  display: inline-block;
+  border-radius: 3px;
+  padding: .3em .5em;
+  border: 1px solid #CCC; /* Adjust border */
+  background: #F3F3F3; /* Adjust background */
+  margin: .2em;
+  font-size: .85em;
+  color: black; /* Adjust text color */
+  transition: 0s;
+}
+.tags-look .tagify__dropdown__item--active{
+  @apply !border-cozy-purple; /* Active item border */
+}
+.tags-look .tagify__dropdown__item:hover{
+  @apply !bg-cozy-purple/20 text-black; /* Hover state */
+}

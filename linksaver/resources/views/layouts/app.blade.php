@@ -6,40 +6,60 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }} - LinkSaver+</title> {{-- Optional: Add App Name --}}
+        <title>{{ config('app.name', 'Laravel') }} - LinkSaver+</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" /> {{-- Or use your 'cozy' font --}}
 
         {{-- Tagify CSS --}}
         <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- Add custom styles for transparency or specific overrides if needed --}}
+        <style>
+            /* Example: Style for the main content area if needed beyond Tailwind */
+            .content-area {
+                /* Add custom styles here if Tailwind isn't enough */
+                /* E.g., backdrop-filter: blur(2px); */
+            }
+            /* Style for the header to potentially make it transparent or blend */
+            header.main-header nav {
+                /* background-color: rgba(255, 251, 235, 0.8); /* Semi-transparent cozy-cream */
+                /* box-shadow: none;
+                border-bottom: 1px solid rgba(139, 69, 19, 0.3); cozy-brown */
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
-        {{-- UPDATED: Subtle gradient background --}}
-        <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
+        {{-- The body already has the background via app.css --}}
+        <div class="min-h-screen flex flex-col">
 
-            {{-- Include Navigation --}}
-            @include('layouts.navigation') {{-- Ensure this file has border/shadow --}}
+            {{-- Pass a class to navigation if needed for styling --}}
+            @include('layouts.navigation', ['navClass' => 'main-header'])
 
-            <!-- Page Heading -->
             @isset($header)
-                {{-- UPDATED: Added subtle bottom border to header if needed --}}
-                <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                {{-- Header might need different styling now - less prominent? --}}
+                <header class="bg-cozy-cream/80 backdrop-blur-sm shadow-sm border-b border-cozy-brown/30 sticky top-0 z-40"> {{-- Example: Semi-transparent cream --}}
+                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
-            <!-- Page Content -->
-             {{-- UPDATED: Increased main padding --}}
-            <main class="py-8 md:py-12">
-                {{ $slot }}
+            {{-- Create the main content area overlay --}}
+            <main class="flex-grow py-8 md:py-12">
+                 {{-- This div centers the content and gives it the background/border --}}
+                <div class="content-area max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {{-- Removed bg/shadow from here, applied below or let children handle --}}
+                     {{ $slot }}
+                </div>
             </main>
+
+            {{-- Optional Footer --}}
+            <footer class="text-center py-4 text-sm text-cozy-text/70">
+                LinkSaver+ &copy; {{ date('Y') }}
+            </footer>
         </div>
 
         {{-- Tagify JS --}}
